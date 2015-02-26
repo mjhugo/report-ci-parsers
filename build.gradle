@@ -1,0 +1,43 @@
+apply plugin: 'groovy'
+apply plugin: 'idea'
+
+group = 'report-ci-parsers'
+
+dependencies {
+    compile "org.codehaus.groovy:groovy-all:2.3.8"
+    testCompile "org.spockframework:spock-core:1.0-groovy-2.3-SNAPSHOT"
+
+}
+
+repositories {
+    // Spock releases are available from Maven Central
+    mavenCentral()
+    // Spock snapshots are available from the Sonatype OSS snapshot repository
+    maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
+}
+
+test {
+    beforeTest { descriptor ->
+        logger.lifecycle("Running test: ${descriptor}")
+    }
+}
+
+
+idea {
+    project {
+        jdkName = '1.8'
+        ipr {
+            withXml { provider ->
+                provider.node.component.find { it.@name == 'VcsDirectoryMappings' }.mapping.@vcs = 'Git'
+            }
+        }
+    }
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = "2.2.1"
+}
