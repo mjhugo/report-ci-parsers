@@ -1,6 +1,7 @@
 apply plugin: 'groovy'
 apply plugin: 'idea'
-apply plugin: "jacoco"
+apply plugin: 'jacoco'
+apply plugin: 'codenarc'
 
 group = 'report-ci-parsers'
 
@@ -20,6 +21,12 @@ test {
     beforeTest { descriptor ->
         logger.lifecycle("Running test: ${descriptor}")
     }
+}
+
+codenarc{
+    configFile = new File('config/codenarc/codenarc.groovy')
+    ignoreFailures = true
+    reportFormat = 'xml'
 }
 
 idea {
