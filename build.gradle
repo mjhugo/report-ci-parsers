@@ -1,12 +1,12 @@
 apply plugin: 'groovy'
 apply plugin: 'idea'
+apply plugin: "jacoco"
 
 group = 'report-ci-parsers'
 
 dependencies {
     compile "org.codehaus.groovy:groovy-all:2.3.8"
     testCompile "org.spockframework:spock-core:1.0-groovy-2.3-SNAPSHOT"
-
 }
 
 repositories {
@@ -21,7 +21,6 @@ test {
         logger.lifecycle("Running test: ${descriptor}")
     }
 }
-
 
 idea {
     project {
@@ -41,3 +40,13 @@ idea {
 task wrapper(type: Wrapper) {
     gradleVersion = "2.2.1"
 }
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.0'
+    }
+}
+apply plugin: 'com.jfrog.bintray'

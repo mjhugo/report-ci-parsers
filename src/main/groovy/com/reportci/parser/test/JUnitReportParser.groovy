@@ -4,13 +4,24 @@ import com.reportci.model.test.Outcome
 import com.reportci.model.test.TestCase
 import com.reportci.model.test.TestError
 import com.reportci.model.test.TestSuite
+import com.reportci.parser.ParserHandler
+import com.reportci.parser.ReportParser
+import groovy.util.slurpersupport.GPathResult
 
-class JUnitReportParser {
+class JUnitReportParser extends ReportParser {
 
-    Collection<TestCase> parse(String reportText) {
-        Collection<TestCase> tests = []
-        def xmlSlurper = new XmlSlurper().parseText(reportText)
-        xmlSlurper.testsuite.each { testSuiteXml ->
+    def JUnitReportParser(ParserHandler parserHandler) {
+        super(parserHandler)
+    }
+
+    @Override
+    void parse(InputStream inputStream) {
+        parseInternal(new XmlSlurper().parse(inputStream))
+
+    }
+
+    void parseInternal(GPathResult root) {
+        root.testsuite.each { testSuiteXml ->
             TestSuite testSuiteDto = new TestSuite()
             testSuiteDto.packageName = testSuiteXml.@package
             testSuiteDto.id = testSuiteXml.@id.toLong()
@@ -53,9 +64,12 @@ class JUnitReportParser {
                     test.outcome = Outcome.SKIPPED
                 }
 
-                tests << test
+                parserHandler.handle(test)
             }
         }
-        return tests
+    }
+
+    void parse(String reportText) {
+        parseInternal(new XmlSlurper().parseText(reportText))
     }
 }

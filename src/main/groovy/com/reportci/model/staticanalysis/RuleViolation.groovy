@@ -1,5 +1,8 @@
 package com.reportci.model.staticanalysis
 
+import groovy.transform.EqualsAndHashCode
+
+@EqualsAndHashCode
 class RuleViolation {
 
     Severity severity

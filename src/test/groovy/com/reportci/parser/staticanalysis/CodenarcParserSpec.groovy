@@ -1,8 +1,9 @@
 package com.reportci.parser.staticanalysis
 
-import com.reportci.parser.staticanalysis.CodeNarcReportParser
-import com.reportci.model.staticanalysis.Severity
 import com.reportci.model.staticanalysis.RuleViolation
+import com.reportci.model.staticanalysis.Severity
+import com.reportci.model.test.TestCase
+import com.reportci.parser.CollectorHandler
 import spock.lang.Specification
 
 class CodenarcParserSpec extends Specification {
@@ -57,9 +58,16 @@ import static org.springframework.http.HttpStatus.*
 '''
 
         when:
-        CodeNarcReportParser codeNarcParser = new CodeNarcReportParser()
-        List<RuleViolation> violations = codeNarcParser.parse(report)
+        CollectorHandler collectorHandler = new CollectorHandler()
+        CodeNarcReportParser codeNarcParser = new CodeNarcReportParser(collectorHandler)
+        codeNarcParser.parse(report)
+        List<RuleViolation> violations = collectorHandler.results 
         def authorViolations = violations.findAll {it.file == 'grails-app/controllers/tester/AuthorController.groovy'}
+
+        collectorHandler = new CollectorHandler()
+        codeNarcParser.parserHandler = collectorHandler
+        codeNarcParser.parse(new ByteArrayInputStream( report.getBytes()))
+        Collection<RuleViolation> resultsFromInputStream = collectorHandler.results
         
         then:
         assert Severity.LOW == authorViolations.find {it.lineNumber == 5}.severity
@@ -70,6 +78,8 @@ import static org.springframework.http.HttpStatus.*
         assert 'GrailsMassAssignment' == authorViolations.find {it.lineNumber == 23}.name
         assert 'respond new Author(params)' == authorViolations.find {it.lineNumber == 23}.sourceLine.trim()
         assert 'Restrict mass attribute assignment' == authorViolations.find {it.lineNumber == 23}.message
+
+        assert resultsFromInputStream == violations
 
     }
 

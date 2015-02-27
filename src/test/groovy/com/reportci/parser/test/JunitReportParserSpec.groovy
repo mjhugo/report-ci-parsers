@@ -1,6 +1,7 @@
 package com.reportci.parser.test
 
 import com.reportci.model.test.Outcome
+import com.reportci.parser.CollectorHandler
 import com.reportci.parser.test.JUnitReportParser
 import com.reportci.model.test.TestCase
 import spock.lang.Specification
@@ -22,11 +23,19 @@ class JunitReportParserSpec extends Specification {
 '''
 
         when:
-        JUnitReportParser parser = new JUnitReportParser()
-        Collection<TestCase> tests = parser.parse(report)
+        CollectorHandler collectorHandler = new CollectorHandler()
+        JUnitReportParser parser = new JUnitReportParser(collectorHandler)
+        parser.parse(report)
+        Collection<TestCase> tests = collectorHandler.results
         TestCase firstTest = tests.find {
             it.className == 'tester.AuthorControllerSpec' && it.name == 'Test the index action returns the correct model'
         }
+        
+        collectorHandler = new CollectorHandler()
+        parser.parserHandler = collectorHandler
+        parser.parse(new ByteArrayInputStream( report.getBytes()))
+        Collection<TestCase> testsFromInputStream = collectorHandler.results
+        
 
         then:
         assert 'tester' == firstTest.testSuite.packageName
@@ -35,6 +44,7 @@ class JunitReportParserSpec extends Specification {
         assert 'local' == firstTest.testSuite.hostName
         assert 0 == firstTest.testSuite.id
         assert 'AuthorControllerSpec' == firstTest.testSuite.name
+        assert testsFromInputStream == tests
     }
 
     void "simple error test included in result list"() {
@@ -64,8 +74,10 @@ class JunitReportParserSpec extends Specification {
 </testsuites>
 '''
         when:
-        JUnitReportParser parser = new JUnitReportParser()
-        Collection<TestCase> tests = parser.parse(report)
+        CollectorHandler collectorHandler = new CollectorHandler()
+        JUnitReportParser parser = new JUnitReportParser(collectorHandler)
+        parser.parse(report)
+        Collection<TestCase> tests = collectorHandler.results
         TestCase firstTest = tests.find {
             it.className == 'tester.AuthorControllerSpec' && it.name == 'Test the save action correctly persists an instance'
         }
@@ -77,7 +89,7 @@ class JunitReportParserSpec extends Specification {
         assert 'local' == firstTest.testSuite.hostName
         assert 0 == firstTest.testSuite.id
         assert 'AuthorControllerSpec' == firstTest.testSuite.name
-        
+
         assert firstTest.errors.first().message == 'Cannot redirect for object [tester.Author : (unsaved)] it is not a domain or has no identifier. Use an explicit redirect instead '
         assert firstTest.errors.first().type == 'org.codehaus.groovy.grails.web.servlet.mvc.exceptions.CannotRedirectException'
         assert firstTest.errors.first().text.trim().startsWith('org.codehaus.groovy.grails.web.servlet.mvc.exceptions.CannotRedirectException: Cannot red')
@@ -114,8 +126,10 @@ class JunitReportParserSpec extends Specification {
 </testsuites>
 '''
         when:
-        JUnitReportParser parser = new JUnitReportParser()
-        Collection<TestCase> tests = parser.parse(report)
+        CollectorHandler collectorHandler = new CollectorHandler()
+        JUnitReportParser parser = new JUnitReportParser(collectorHandler)
+        parser.parse(report)
+        Collection<TestCase> tests = collectorHandler.results
         TestCase firstTest = tests.find {
             it.className == 'tester.AuthorControllerSpec' && it.name == 'Test that the delete action deletes an instance if it exists'
         }
@@ -151,8 +165,10 @@ class JunitReportParserSpec extends Specification {
 </testsuites>
 '''
         when:
-        JUnitReportParser parser = new JUnitReportParser()
-        Collection<TestCase> tests = parser.parse(report)
+        CollectorHandler collectorHandler = new CollectorHandler()
+        JUnitReportParser parser = new JUnitReportParser(collectorHandler)
+        parser.parse(report)
+        Collection<TestCase> tests = collectorHandler.results
         TestCase firstTest = tests.find {
             it.className == 'tester.AuthorControllerSpec' && it.name == 'Test the create action returns the correct model'
         }
