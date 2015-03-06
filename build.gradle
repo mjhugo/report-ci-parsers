@@ -27,6 +27,7 @@ codenarc{
     configFile = new File('config/codenarc/codenarc.groovy')
     ignoreFailures = true
     reportFormat = 'xml'
+    toolVersion = "0.23"
 }
 
 idea {
