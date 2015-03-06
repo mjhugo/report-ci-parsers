@@ -2,7 +2,6 @@ package com.reportci.parser.test
 
 import com.reportci.model.test.Outcome
 import com.reportci.parser.CollectorHandler
-import com.reportci.parser.test.JUnitReportParser
 import com.reportci.model.test.TestCase
 import spock.lang.Specification
 
@@ -42,7 +41,7 @@ class JunitReportParserSpec extends Specification {
         assert 4.909 == firstTest.duration
         assert Outcome.SUCCESS == firstTest.outcome
         assert 'local' == firstTest.testSuite.hostName
-        assert 0 == firstTest.testSuite.id
+        assert 0 == firstTest.testSuite.testSuiteId
         assert 'AuthorControllerSpec' == firstTest.testSuite.name
         assert testsFromInputStream == tests
     }
@@ -87,7 +86,7 @@ class JunitReportParserSpec extends Specification {
         assert 0.559 == firstTest.duration
         assert Outcome.ERROR == firstTest.outcome
         assert 'local' == firstTest.testSuite.hostName
-        assert 0 == firstTest.testSuite.id
+        assert 0 == firstTest.testSuite.testSuiteId
         assert 'AuthorControllerSpec' == firstTest.testSuite.name
 
         assert firstTest.errors.first().message == 'Cannot redirect for object [tester.Author : (unsaved)] it is not a domain or has no identifier. Use an explicit redirect instead '
@@ -139,7 +138,7 @@ class JunitReportParserSpec extends Specification {
         assert 0.086 == firstTest.duration
         assert Outcome.FAILURE == firstTest.outcome
         assert 'local' == firstTest.testSuite.hostName
-        assert 0 == firstTest.testSuite.id
+        assert 0 == firstTest.testSuite.testSuiteId
         assert 'AuthorControllerSpec' == firstTest.testSuite.name
 
         assert firstTest.failures.first().message == 'Condition not satisfied:\n\nAuthor.count() == 1\n       |       |\n       0       false\n'
@@ -178,7 +177,7 @@ class JunitReportParserSpec extends Specification {
         assert 0 == firstTest.duration
         assert Outcome.SKIPPED == firstTest.outcome
         assert 'local' == firstTest.testSuite.hostName
-        assert 0 == firstTest.testSuite.id
+        assert 0 == firstTest.testSuite.testSuiteId
         assert 'AuthorControllerSpec' == firstTest.testSuite.name
     }
 

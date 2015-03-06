@@ -24,7 +24,7 @@ class JUnitReportParser extends ReportParser {
         root.testsuite.each { testSuiteXml ->
             TestSuite testSuiteDto = new TestSuite()
             testSuiteDto.packageName = testSuiteXml.@package
-            testSuiteDto.id = testSuiteXml.@id.toLong()
+            testSuiteDto.testSuiteId = testSuiteXml.@id.toLong()
             testSuiteDto.name = testSuiteXml.@name
             testSuiteDto.timestampString = testSuiteXml.@timestamp
             testSuiteDto.hostName = testSuiteXml.@hostname

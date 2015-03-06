@@ -5,7 +5,7 @@ import groovy.transform.EqualsAndHashCode
 @EqualsAndHashCode
 class TestSuite {
     String name
-    Long id
+    Long testSuiteId
     String packageName
     String hostName
     String timestampString
